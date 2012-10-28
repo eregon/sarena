@@ -41,9 +41,9 @@ class AlphaBetaPlayer(Player, minimax.Game):
         score = board.get_score()
 
         if score > 0:
-            return -player
-        elif score < 0:
             return player
+        elif score < 0:
+            return -player
         else:
             return 0 # draw
 
