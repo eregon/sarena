@@ -8,6 +8,8 @@ import random
 from sarena import *
 import minimax
 
+RED = -1
+YELLOW = 1
 
 class AlphaBetaPlayer(Player, minimax.Game):
 
@@ -46,11 +48,8 @@ class AlphaBetaPlayer(Player, minimax.Game):
 
 
     def play(self, percepts, step, time_left):
-        if step % 2 == 0:
-            player = -1
-        else:
-            player = 1
-        state = (Board(percepts), player)
+        player = RED if step % 2 == 0 else YELLOW
+        state = (Board(percepts, invert=(player==YELLOW)), player)
         return minimax.search(state, self)
 
 
