@@ -35,22 +35,15 @@ class AlphaBetaPlayer(Player, minimax.Game):
     def cutoff(self, state, depth):
         board, player = state
         return board.is_finished()
-        #anything to do with the player ? what to do with depth ?
 
     def evaluate(self, state):
         board, player = state
         score = board.get_score()
 
         if score > 0:
-            if player == 1:
-                return -1
-            else:
-                return 1
-        if score < 0:
-            if player == 1:
-                return 1
-            else:
-                return -1
+            return -player
+        elif score < 0:
+            return player
         else:
             return 0 #draw
 
