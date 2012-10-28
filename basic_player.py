@@ -22,13 +22,13 @@ class AlphaBetaPlayer(Player, minimax.Game):
         print("lll")
         board, player = state
         if board.is_finished():
-            yield None, (board, player*(-1)) 
+            yield None, (board, player*(-1))
         else:
             actions = board.get_actions()
             for action in actions:
                 if(board.is_action_valid(action)):
-                    board.play_action(action)  
-                    newboard = Board(board.get_percepts(True)) #instead of simply cloning, we create a new REVERSED board. Do we need to COPY the percepts or is it fine like that to create a NEW board ?          
+                    board.play_action(action)
+                    newboard = Board(board.get_percepts(True)) #instead of simply cloning, we create a new REVERSED board. Do we need to COPY the percepts or is it fine like that to create a NEW board ?
                     otherPlayer = player*(-1)
                     yield action, (newboard, otherPlayer) # (action, state)
             #do we need to yield None if there is no action or if all actions are not valid ?
@@ -43,7 +43,7 @@ class AlphaBetaPlayer(Player, minimax.Game):
         score = board.get_score()
 
         print(score)
-        if score > 0: 
+        if score > 0:
             if player == 1:
                 return -1
             else:
