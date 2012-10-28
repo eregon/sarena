@@ -19,7 +19,6 @@ class AlphaBetaPlayer(Player, minimax.Game):
     """
 
     def successors(self, state):
-        print("lll")
         board, player = state
         if board.is_finished():
             yield None, (board, player*(-1))
@@ -42,7 +41,6 @@ class AlphaBetaPlayer(Player, minimax.Game):
         board, player = state
         score = board.get_score()
 
-        print(score)
         if score > 0:
             if player == 1:
                 return -1
