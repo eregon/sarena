@@ -33,7 +33,8 @@ class AlphaBetaPlayer(Player, minimax.Game):
 
     def cutoff(self, state, depth):
         board, player = state
-        return board.is_finished()
+        # TODO: remove depth limitation
+        return depth >= 2 or board.is_finished()
 
     def evaluate(self, state):
         board, player = state
