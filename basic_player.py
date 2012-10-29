@@ -30,16 +30,17 @@ class AlphaBetaPlayer(Player, minimax.Game):
     def cutoff(self, state, depth):
         board, player = state
         # TODO: remove depth limitation
-        return depth >= 2 or board.is_finished()
+        return depth >= 1 or board.is_finished()
 
     def evaluate(self, state):
         board, player = state
         score = board.get_score()
 
+        # return score * self.player
         if score > 0:
-            return player
+            return self.player
         elif score < 0:
-            return -player
+            return -self.player
         else:
             return 0 # draw
 
@@ -47,6 +48,7 @@ class AlphaBetaPlayer(Player, minimax.Game):
     def play(self, percepts, step, time_left):
         player = RED if step % 2 == 0 else YELLOW
         state = (Board(percepts, invert=(player==YELLOW)), player)
+        self.player = player
         return minimax.search(state, self)
 
 
