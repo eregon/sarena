@@ -26,8 +26,7 @@ class AlphaBetaPlayer(Player, minimax.Game):
             yield None, (board, -player)
         else:
             for action in board.get_actions():
-                # copies the percepts, in the view of the opponent
-                new_board = Board(board.m, invert=True)
+                new_board = board.clone()
                 new_board.play_action(action)
                 yield action, (new_board, -player) # (action, state)
 
