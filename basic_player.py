@@ -22,13 +22,10 @@ class AlphaBetaPlayer(Player, minimax.Game):
 
     def successors(self, state):
         board, player = state
-        if board.is_finished():
-            yield None, (board, -player)
-        else:
-            for action in board.get_actions():
-                new_board = board.clone()
-                new_board.play_action(action)
-                yield action, (new_board, -player) # (action, state)
+        for action in board.get_actions():
+            new_board = board.clone()
+            new_board.play_action(action)
+            yield action, (new_board, -player) # (action, state)
 
     def cutoff(self, state, depth):
         board, player = state
