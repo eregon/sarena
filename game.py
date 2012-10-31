@@ -212,7 +212,7 @@ def play_game(players, board, viewer=None, credits=[None, None]):
             start = time.time()
             try:
                 action = players[player].play(
-                    board.get_percepts(player == 0),
+                    board.get_percepts(player == 1),
                     step,
                     credits[player])
             except socket.timeout:
