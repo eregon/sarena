@@ -47,20 +47,19 @@ class AlphaBetaPlayer(Player, minimax.Game):
     def play(self, percepts, step, time_left):
         self.player = RED if step % 2 == 0 else YELLOW
         board = Board(percepts, invert=(self.player==YELLOW))
-        nodes_before = AlphaBetaPlayer.nodes_amount      
-        t1 = time.clock() 
+        nodes_before = AlphaBetaPlayer.nodes_amount
+        t1 = time.clock()
         '''replace clock by time on unix systems'''
         '''result = minimax.search(board, self)   '''
-        result = minimax.search(board, self, False)          
-        t2 = time.clock() 
+        result = minimax.search(board, self, False)
+        t2 = time.clock()
         '''replace clock by time on unix systems'''
         print("Amount of nodes visited:", AlphaBetaPlayer.nodes_amount-nodes_before);
         print("Time required:", t2-t1)
         print("Player : ", self.player)
-        print ("Result : ", result)
+        print("Result : ", result)
         return result;
 
 if __name__ == "__main__":
     player_main(AlphaBetaPlayer())
     print("Total nodes :", AlphaBetaPlayer.nodes_amount)
-    
