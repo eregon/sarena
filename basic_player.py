@@ -49,16 +49,14 @@ class AlphaBetaPlayer(Player, minimax.Game):
         board = Board(percepts, invert=(self.player==YELLOW))
         nodes_before = AlphaBetaPlayer.nodes_amount
         t1 = time.clock()
-        '''replace clock by time on unix systems'''
-        '''result = minimax.search(board, self)   '''
+        # result = minimax.search(board, self)
         result = minimax.search(board, self, False)
         t2 = time.clock()
-        '''replace clock by time on unix systems'''
         print("Amount of nodes visited:", AlphaBetaPlayer.nodes_amount-nodes_before);
         print("Time required:", t2-t1)
         print("Player : ", self.player)
         print("Result : ", result)
-        return result;
+        return result
 
 if __name__ == "__main__":
     player_main(AlphaBetaPlayer())
