@@ -20,12 +20,12 @@ class AlphaBetaPlayer(Player, minimax.Game):
     the board.
 
     """
-    nodes_amount=0
+    nodes = 0
     def successors(self, board):
         for action in board.get_actions():
             new_board = board.clone()
             new_board.play_action(action)
-            AlphaBetaPlayer.nodes_amount+=1
+            AlphaBetaPlayer.nodes += 1
             yield action, new_board
 
     def cutoff(self, board, depth):
@@ -47,17 +47,17 @@ class AlphaBetaPlayer(Player, minimax.Game):
     def play(self, percepts, step, time_left):
         self.player = RED if step % 2 == 0 else YELLOW
         board = Board(percepts, invert=(self.player==YELLOW))
-        nodes_before = AlphaBetaPlayer.nodes_amount
-        t1 = time.clock()
+        nodes_before = AlphaBetaPlayer.nodes
+        t0 = time.clock()
         # result = minimax.search(board, self)
-        result = minimax.search(board, self, False)
-        t2 = time.clock()
-        print("Amount of nodes visited:", AlphaBetaPlayer.nodes_amount-nodes_before);
-        print("Time required:", t2-t1)
-        print("Player : ", self.player)
-        print("Result : ", result)
+        result = minimax.search(board, self, prune=False)
+        t1 = time.clock()
+        print("Nodes visited:", AlphaBetaPlayer.nodes-nodes_before);
+        print("Time required:", t1-t0)
+        print("Player: ", self.player)
+        print("Result: ", result)
         return result
 
 if __name__ == "__main__":
     player_main(AlphaBetaPlayer())
-    print("Total nodes :", AlphaBetaPlayer.nodes_amount)
+    print("Total number of nodes visited:", AlphaBetaPlayer.nodes)
