@@ -13,13 +13,6 @@ RED = -1
 YELLOW = 1
 
 class AlphaBetaPlayer(Player, minimax.Game):
-
-    """Sarena Player.
-
-    A state is a tuple (b, p) where p is the player to make a move and b
-    the board.
-
-    """
     def __init__(self):
         self.nodes = 0
 
