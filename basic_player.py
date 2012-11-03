@@ -40,8 +40,8 @@ class AlphaBetaPlayer(Player, minimax.Game):
 
 
     def play(self, percepts, step, time_left):
-        self.player = RED if step % 2 == 0 else YELLOW
-        board = Board(percepts, invert=(self.player==YELLOW))
+        self.player = YELLOW # game.py always makes us the yellow player by inverting the board
+        board = Board(percepts)
         nodes_before = self.nodes
         t0 = time.clock()
         # result = minimax.search(board, self)
