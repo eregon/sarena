@@ -28,7 +28,7 @@ DELTA_OFFSET = TOP_OFFSET-BOT_OFFSET
 # colors
 # careful choice of values
 # second bit means a player (self or opponent)
-# value of player for score is color-2
+# value of player for score is color-2 (neutral will give 0)
 PLAYER_MASK   = 0b01
 SELF_COLOR    = 0b01
 OTHER_COLOR   = 0b11
@@ -138,11 +138,8 @@ class State:
         for i in range(36):
             pile = state[i]
             if pile:
-                color = (pile & TOP_MASK) >> TOP_OFFSET
-                if color == SELF_COLOR:
-                    score += (pile & HEIGHT_MASK)
-                elif color == OTHER_COLOR:
-                    score -= (pile & HEIGHT_MASK)
+                color = ((pile & TOP_MASK) >> TOP_OFFSET) - 2
+                score += (pile & HEIGHT_MASK) * color
         return score
 
 # We are always the yellow player
