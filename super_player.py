@@ -20,6 +20,27 @@ class SuperPlayer(Player, minimax.Game):
         # TODO: remove depth limitation
         return depth >= 2 or board.is_finished()
 
+    def score(board):
+        score = 0
+        m = board.m
+        # final states:
+        # for any 4-tower on arrows, top color wins
+        # for i,j,s in board.get_towers():
+        #     if (i,j) is arrows and height(tower) == 4:
+        #         score += top color
+
+        # for any 4-tower on normal, bottom color wins (except if all neighbors around until EOG)
+        # for i,j,s in board.get_towers():
+        #     if (i,j) is normal and height(tower) == 4:
+        #         score += bottom color
+
+        # for any tower with no neighbors on arrows, top color wins (except if any incoming around)
+        # for i,j,s in board.get_towers():
+        #     if (i,j) is arrows and no neighbors:
+        #         score += top color / 2
+
+        # for any tower with no neighbors on normal, bottom color wins (except if any incoming in range 2 ... not likely)
+
     def evaluate(self, board):
         return board.get_score()
 
