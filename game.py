@@ -24,6 +24,7 @@ import time
 import socket
 import xmlrpc.client
 import pickle
+import traceback
 
 from sarena import *
 
@@ -221,6 +222,7 @@ def play_game(players, board, viewer=None, credits=[None, None]):
             except (socket.error, xmlrpc.client.Fault) as e:
                 logging.error("Player %d was unable to play step %d." +
                         " Reason: %s", player, step, e)
+                traceback.print_tb(e.__traceback__)
                 raise InvalidAction
             end = time.time()
             t = end - start
