@@ -9,9 +9,6 @@ from sarena import *
 import minimax
 import time
 
-RED = -1
-YELLOW = 1
-
 class AlphaBetaPlayer(Player, minimax.Game):
     def __init__(self):
         self.nodes = 0
@@ -32,24 +29,23 @@ class AlphaBetaPlayer(Player, minimax.Game):
 
         # return score * self.player
         if score > 0:
-            return self.player
+            return 1
         elif score < 0:
-            return -self.player
+            return -1
         else:
             return 0 # draw
 
 
     def play(self, percepts, step, time_left):
-        self.player = YELLOW # game.py always makes us the yellow player by inverting the board
+        # We are always the yellow player
         board = Board(percepts)
         nodes_before = self.nodes
         t0 = time.clock()
-        # result = minimax.search(board, self)
-        result = minimax.search(board, self, prune=False)
+        result = minimax.search(board, self)
+        # result = minimax.search(board, self, prune=False)
         t1 = time.clock()
         print("Nodes visited:", self.nodes-nodes_before);
         print("Time required:", t1-t0)
-        print("Player: ", self.player)
         print("Result: ", result)
         return result
 
