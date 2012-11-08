@@ -15,7 +15,7 @@ NO_CHIP_TUPLE = [0,0]
 # with:
 # tt: color on top of the pile
 # bb: color on bottom of the pile
-# hh: height of the pile, represented on 3 bytes
+# hhh: height of the pile, represented on 3 bytes
 
 HEIGHT_MASK = 0b00000111
 BOT_MASK    = 0b00110000
