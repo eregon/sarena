@@ -44,6 +44,24 @@ EMPTY_PILE = 0b00000000
 #     return obj
 
 class State:
+    NEIGHBORS = None
+
+    def neighbors_at(i):
+        if i >= 6:     # NORTH
+            yield(i-6)
+        if i % 6 != 5: # EAST
+            yield(i+1)
+        if i < 30:     # SOUTH
+            yield(i+6)
+        if i % 6 != 0: # WEST
+            yield(i-1)
+
+    def precompute_neighbors():
+        State.NEIGHBORS = [tuple(State.neighbors_at(i)) for i in range(36)]
+
+    def setup():
+        State.precompute_neighbors()
+
     def color_code_from_board_color(color):
         if color == 1:
             return SELF_COLOR
@@ -95,23 +113,14 @@ class State:
             ) for e in row) + "\n"
         return s
 
-    def neighbors(state, i):
-        if i >= 6:     # NORTH
-            yield(i-6, state[i-6])
-        if i % 6 != 5: # EAST
-            yield(i+1, state[i+1])
-        if i < 30:     # SOUTH
-            yield(i+6, state[i+6])
-        if i % 6 != 0: # WEST
-            yield(i-1, state[i-1])
-
     def successors(state):
         for i in range(36): # for i, pile in enumerate(state):
             pile = state[i]
             if pile: # if any height
                 arrows = (i % 2 == (i // 6) % 2) # x % 2 == y % 2
                 height = (pile & HEIGHT_MASK)
-                for n, neighbor in State.neighbors(state, i):
+                for n in State.NEIGHBORS[i]:
+                    neighbor = state[n]
                     if neighbor:
                         h = height + (neighbor & HEIGHT_MASK)
                         if h <= 4:
@@ -182,4 +191,5 @@ class SuperPlayer(Player, minimax.Game):
         return action
 
 if __name__ == "__main__":
+    State.setup()
     player_main(SuperPlayer())
