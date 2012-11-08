@@ -203,9 +203,9 @@ def play_game(players, board, viewer=None, credits=[None, None]):
         while not board.is_finished():
             player = step % 2
             step += 1
-            logging.debug("Asking player %d to play step %d", player, step)
+            logging.debug("Asking player %d to play step %d", player+1, step)
             if credits[player] is not None:
-                logging.debug("Time left for player %d: %f", player,
+                logging.debug("Time left for player %d: %f", player+1,
                               credits[player])
                 if credits[player] < 0:
                     raise TimeCreditExpired
@@ -221,7 +221,7 @@ def play_game(players, board, viewer=None, credits=[None, None]):
                 raise TimeCreditExpired
             except (socket.error, xmlrpc.client.Fault) as e:
                 logging.error("Player %d was unable to play step %d." +
-                        " Reason: %s", player, step, e)
+                        " Reason: %s", player+1, step, e)
                 traceback.print_tb(e.__traceback__)
                 raise InvalidAction
             end = time.time()
@@ -230,7 +230,7 @@ def play_game(players, board, viewer=None, credits=[None, None]):
                          step, action, t)
             if credits[player] is not None:
                 credits[player] -= t
-                logging.debug("New time credit for player %d: %f", player,
+                logging.debug("New time credit for player %d: %f", player+1,
                               credits[player])
                 if credits[player] < -0.5:  # small epsilon to be sure
                     raise TimeCreditExpired
