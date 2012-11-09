@@ -158,7 +158,7 @@ class SuperPlayer(Player, minimax.Game):
 
     def cutoff(self, state, depth):
         # TODO: remove depth limitation
-        return depth >= 3 or State.is_finished(state)
+        return depth >= 2 or State.is_finished(state)
 
     def score(state):
         score = 0
