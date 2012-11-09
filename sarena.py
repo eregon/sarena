@@ -76,9 +76,8 @@ class Board:
 
     # standard sarena
     max_height = 4
-    init_board = random_board()
 
-    def __init__(self, percepts=init_board, invert=False):
+    def __init__(self, percepts, invert=False):
         """Initialize the board.
 
         Arguments:
