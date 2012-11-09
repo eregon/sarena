@@ -30,8 +30,8 @@ DELTA_OFFSET = TOP_OFFSET-BOT_OFFSET
 # second bit means a player (self or opponent)
 # value of player for score is color-2 (neutral will give 0)
 PLAYER_MASK   = 0b01
-SELF_COLOR    = 0b01
-OTHER_COLOR   = 0b11
+SELF_COLOR    = 0b11
+OTHER_COLOR   = 0b01
 NEUTRAL_COLOR = 0b10
 NO_CHIP_COLOR = 0b00
 
