@@ -292,6 +292,8 @@ if __name__ == "__main__":
                       action="store_true", dest="headless", default=False,
                       help="run without user interface (players cannot be" +
                            " human)")
+    parser.add_option("-n", type=int, dest="games", default=1,
+                      metavar="N", help="play N games consecutively")
     g = parser.add_option_group("Rule options (no effect on replay)")
     g.add_option("-t", "--time", type=float, dest="time",
                  help="set the time credit per player (default: untimed game)",
@@ -318,77 +320,80 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)s -- %(levelname)s: %(message)s",
                         level=level)
 
-    # Create initial board
-    if options.replay is not None:
-        # replay mode
-        logging.info("Loading trace '%s'", options.replay)
-        try:
-            trace = load_trace(options.replay)
-        except (IOError, pickle.UnpicklingError) as e:
-            logging.error("Unable to load trace. Reason: %s", e)
-            exit(1)
-        board = trace.get_initial_board()
-    elif options.board is not None:
-        # load board
-        logging.debug("Loading board from '%s'", options.board)
-        try:
-            percepts = load_percepts(options.board)
-        except (IOError, pickle.UnpicklingError) as e:
-            logging.warning("Unable to load board. Reason: %s", e)
-            exit(1)
-        board = Board(percepts)
-    else:
-        # default board
-        board = Board(invert=options.invert)
-
-    # Create viewer
-    if options.headless:
-        options.gui = False
-        viewer = None
-    else:
-        if options.gui:
+    for i in range(options.games):
+        logging.info("Starting Game %d" % (i+1,))
+        # Create initial board
+        if options.replay is not None:
+            # replay mode
+            logging.info("Loading trace '%s'", options.replay)
             try:
-                import gui
-                viewer = gui.TkViewer(board)
-            except Exception as e:
-                logging.warning("Unable to load GUI, falling back to" +
-                        " console. Reason: %s", e)
-                options.gui = False
-        if not options.gui:
-            viewer = ConsoleViewer()
-
-    if options.replay is None:
-        # Normal play mode
-        players = [viewer, viewer]
-        credits = [None, None]
-        for i in range(2):
-            if args[i] != 'human':
-                players[i] = connect_player(args[i])
-                credits[i] = options.time
-        trace = [None]
-
-        def play():
+                trace = load_trace(options.replay)
+            except (IOError, pickle.UnpicklingError) as e:
+                logging.error("Unable to load trace. Reason: %s", e)
+                exit(1)
+            board = trace.get_initial_board()
+        elif options.board is not None:
+            # load board
+            logging.debug("Loading board from '%s'", options.board)
             try:
-                trace[0] = play_game(players, board, viewer, credits)
-            except KeyboardInterrupt:
-                exit()
-            if options.write is not None:
-                logging.info("Writing trace to '%s'", options.write)
-                try:
-                    trace[0].write(options.write)
-                except IOError as e:
-                    logging.error("Unable to write trace. Reason: %s", e)
-            if options.gui:
-                logging.debug("Replaying trace.")
-                viewer.replay(trace[0], show_end=True)
-
-        if options.gui:
-            import threading
-            threading.Thread(target=play).start()
-            viewer.run()
+                percepts = load_percepts(options.board)
+            except (IOError, pickle.UnpicklingError) as e:
+                logging.warning("Unable to load board. Reason: %s", e)
+                exit(1)
+            board = Board(percepts)
         else:
-            play()
-    else:
-        # Replay mode
-        logging.debug("Replaying trace.")
-        viewer.replay(trace)
+            # default board
+            board = Board(percepts=random_board(), invert=options.invert)
+
+        # Create viewer
+        if options.headless:
+            options.gui = False
+            viewer = None
+        else:
+            if options.gui:
+                try:
+                    import gui
+                    viewer = gui.TkViewer(board)
+                except Exception as e:
+                    logging.warning("Unable to load GUI, falling back to" +
+                            " console. Reason: %s", e)
+                    options.gui = False
+            if not options.gui:
+                viewer = ConsoleViewer()
+
+        if options.replay is None:
+            # Normal play mode
+            players = [viewer, viewer]
+            credits = [None, None]
+            for i in range(2):
+                if args[i] != 'human':
+                    players[i] = connect_player(args[i])
+                    credits[i] = options.time
+            trace = [None]
+
+            def play():
+                try:
+                    trace[0] = play_game(players, board, viewer, credits)
+                except KeyboardInterrupt:
+                    exit()
+                if options.write is not None:
+                    logging.info("Writing trace to '%s'", options.write)
+                    try:
+                        trace[0].write(options.write)
+                    except IOError as e:
+                        logging.error("Unable to write trace. Reason: %s", e)
+                if options.gui:
+                    logging.debug("Replaying trace.")
+                    viewer.replay(trace[0], show_end=True)
+
+            if options.gui:
+                import threading
+                threading.Thread(target=play).start()
+                viewer.run()
+            else:
+                play()
+        else:
+            # Replay mode
+            logging.debug("Replaying trace.")
+            viewer.replay(trace)
+        logging.info("End of Game %d" % (i+1,))
