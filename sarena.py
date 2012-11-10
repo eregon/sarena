@@ -303,6 +303,15 @@ class Board:
             newTow.append(tower[i])
         return newTow
 
+    def write(self, filename):
+        """Write the board to a file."""
+        f = None
+        try:
+            f = open(filename, "wb")
+            pickle.dump(self.m, f)
+        finally:
+            if f is not None:
+                f.close()
 
 def load_percepts(pickleFile):
     """Load percepts from a pickle file.

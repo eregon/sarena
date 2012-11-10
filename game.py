@@ -303,6 +303,8 @@ if __name__ == "__main__":
                  help="invert the initial board")
     g.add_option("--board", dest="board",
                    help="load initial board from FILE", metavar="FILE")
+    g.add_option("-b", "--save-board", dest="save_board",
+                 help="save board to FILE", metavar="FILE")
     (options, args) = parser.parse_args()
     if options.time is not None and options.time <= 0:
         parser.error("option -t: time credit must be strictly positive")
@@ -344,6 +346,9 @@ if __name__ == "__main__":
         else:
             # default board
             board = Board(percepts=random_board(), invert=options.invert)
+
+        if options.save_board:
+            board.write(options.save_board)
 
         # Create viewer
         if options.headless:
