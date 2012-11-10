@@ -6,7 +6,6 @@
 import random
 
 from sarena import *
-import minimax
 
 NO_CHIP_TUPLE = [0,0]
 
@@ -130,8 +129,47 @@ class State:
             score += height * top
         return score
 
+# Minimax
+inf = float("inf")
+
+def minimax(state, game, prune=True):
+    def max_value(state, alpha, beta, depth):
+        if game.cutoff(state, depth):
+            return game.evaluate(state), None
+        val = -inf
+        action = None
+        for a, s in game.successors(state):
+            v, _ = min_value(s, alpha, beta, depth + 1)
+            if v > val:
+                val = v
+                action = a
+                if prune:
+                    if v >= beta:
+                        return v, a
+                    alpha = max(alpha, v)
+        return val, action
+
+    def min_value(state, alpha, beta, depth):
+        if game.cutoff(state, depth):
+            return game.evaluate(state), None
+        val = inf
+        action = None
+        for a, s in game.successors(state):
+            v, _ = max_value(s, alpha, beta, depth + 1)
+            if v < val:
+                val = v
+                action = a
+                if prune:
+                    if v <= alpha:
+                        return v, a
+                    beta = min(beta, v)
+        return val, action
+
+    _, action = max_value(state, -inf, inf, 0)
+    return action
+
 # We are always the yellow player
-class SuperPlayer(Player, minimax.Game):
+class SuperPlayer(Player):
     def successors(self, state):
         return State.successors(state)
 
@@ -166,7 +204,7 @@ class SuperPlayer(Player, minimax.Game):
     def play(self, percepts, step, time_left):
         # TODO: check step to see if need to reset
         state = State.from_percepts(percepts)
-        action = minimax.search(state, self)
+        action = minimax(state, self)
         return action
 
 if __name__ == "__main__":
