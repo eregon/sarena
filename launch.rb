@@ -39,8 +39,8 @@ begin
   times = []
   lines = []
 
-  # score = nil
-  # time = 0
+  puts
+  puts Time.now
   puts "Game i: score steps time"
   IO.popen("python3 game.py -v#{BOARD} -n #{n} --headless http://localhost:8000 http://localhost:7000 2>&1") do |io|
     i = 0
