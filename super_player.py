@@ -28,6 +28,8 @@ EMPTY_PILE = (0, 0, 0)
 #     print(obj)
 #     return obj
 
+RANGE36 = range(36)
+
 class State:
     NEIGHBORS = None
 
@@ -42,7 +44,7 @@ class State:
             yield(i-1)
 
     def precompute_neighbors():
-        State.NEIGHBORS = [tuple(State.neighbors_at(i)) for i in range(36)]
+        State.NEIGHBORS = [tuple(State.neighbors_at(i)) for i in RANGE36]
 
     def setup():
         State.precompute_neighbors()
@@ -58,7 +60,7 @@ class State:
             raise Exception("Unknown board color: %d" % (color,))
 
     def from_percepts(percepts):
-        state = list(range(36))
+        state = list(RANGE36)
         for i in range(6):
             for j in range(6):
                 k = i*6+j
@@ -99,7 +101,7 @@ class State:
         return s
 
     def successors(state):
-        for i in range(36): # for i, pile in enumerate(state):
+        for i in RANGE36: # for i, pile in enumerate(state):
             pile = state[i]
             height, bot, top = pile
             if height: # if any height
@@ -136,7 +138,7 @@ class State:
 
     def score(state):
         score = 0
-        for i in range(36):
+        for i in RANGE36:
             height, bot, top = state[i]
             score += height * top
         return score
