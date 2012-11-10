@@ -132,38 +132,29 @@ class State:
 # Minimax
 inf = float("inf")
 
-def minimax(state, game):
-    def max_value(state, alpha, beta, depth):
+def negamax(state, game):
+    def rec(state, alpha, beta, depth, color):
         if game.cutoff(state, depth):
-            return game.evaluate(state), None
+            return color * game.evaluate(state)
         val = -inf
-        action = None
-        for a, s in game.successors(state):
-            v, _ = min_value(s, alpha, beta, depth + 1)
+        for _, s in game.successors(state):
+            v = -rec(s, -beta, -alpha, depth+1, -color)
             if v > val:
                 val = v
-                action = a
                 if v >= beta:
-                    return v, a
+                    return v
                 alpha = max(alpha, v)
-        return val, action
+        return val
 
-    def min_value(state, alpha, beta, depth):
-        if game.cutoff(state, depth):
-            return game.evaluate(state), None
-        val = inf
-        action = None
-        for a, s in game.successors(state):
-            v, _ = max_value(s, alpha, beta, depth + 1)
-            if v < val:
-                val = v
-                action = a
-                if v <= alpha:
-                    return v, a
-                beta = min(beta, v)
-        return val, action
-
-    _, action = max_value(state, -inf, inf, 0)
+    alpha = -inf
+    val = -inf
+    action = None
+    for a, s in game.successors(state):
+        v = -rec(s, -inf, -alpha, 1, -1)
+        if v > val:
+            val = v
+            action = a
+            alpha = max(alpha, v)
     return action
 
 # We are always the yellow player
@@ -202,7 +193,7 @@ class SuperPlayer(Player):
     def play(self, percepts, step, time_left):
         # TODO: check step to see if need to reset
         state = State.from_percepts(percepts)
-        action = minimax(state, self)
+        action = negamax(state, self)
         return action
 
 if __name__ == "__main__":
