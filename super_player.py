@@ -139,22 +139,19 @@ def negamax(state, game):
         val = -inf
         for _, s in game.successors(state):
             v = -rec(s, -beta, -alpha, depth+1, -color)
-            if v > val:
-                val = v
-                if v >= beta:
-                    return v
-                alpha = max(alpha, v)
-        return val
+            if v >= beta:
+                return v
+            if v > alpha:
+                alpha = v
+        return alpha
 
     alpha = -inf
-    val = -inf
     action = None
     for a, s in game.successors(state):
         v = -rec(s, -inf, -alpha, 1, -1)
-        if v > val:
-            val = v
+        if v > alpha:
+            alpha = v
             action = a
-            alpha = max(alpha, v)
     return action
 
 # We are always the yellow player
