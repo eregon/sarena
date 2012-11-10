@@ -4,6 +4,8 @@
 
 n = (ARGV[0] || 10).to_i
 
+BOARD = " --board b1.dmp"
+
 $stdout.sync = true
 
 mean = -> sample {
@@ -28,8 +30,8 @@ mad = -> sample {
 
 begin
   player1 = spawn('python3 super_player.py  -p 8000', out: File::NULL, err: File::NULL)
-  player2 = spawn('python3 random_player.py -p 7000', out: File::NULL, err: File::NULL)
-  #player2 = spawn('python3 fast_player.py   -p 7000', out: File::NULL, err: File::NULL)
+  #player2 = spawn('python3 random_player.py -p 7000', out: File::NULL, err: File::NULL)
+  player2 = spawn('python3 fast_player.py   -p 7000', out: File::NULL, err: File::NULL)
   sleep 0.1 # let them start
 
   scores = []
@@ -40,7 +42,7 @@ begin
   # score = nil
   # time = 0
   puts "Game i: score steps time"
-  IO.popen("python3 game.py -v -n #{n} --headless http://localhost:8000 http://localhost:7000 2>&1") do |io|
+  IO.popen("python3 game.py -v#{BOARD} -n #{n} --headless http://localhost:8000 http://localhost:7000 2>&1") do |io|
     i = 0
     while line = io.gets
       lines << line
