@@ -125,13 +125,13 @@ class State:
                         h = height + (neighbor & HEIGHT_MASK)
                         if h <= 4:
                             # put i on top of neighbor
-                            new_state = bytearray(state)
+                            new_state = state[:]
                             new_state[i] = EMPTY_PILE
                             new_state[n] = h + (neighbor & BOT_MASK) + (pile & TOP_MASK)
                             yield((i//6, i%6, n//6, n%6), new_state)
                     elif not arrows: # arrows around
                         # move and reverse i to neighbor place
-                        new_state = bytearray(state)
+                        new_state = state[:]
                         new_state[i] = EMPTY_PILE
                         new_state[n] = height + ((pile & TOP_MASK) >> DELTA_OFFSET) + \
                                                 ((pile & BOT_MASK) << DELTA_OFFSET)
