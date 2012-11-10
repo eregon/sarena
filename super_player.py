@@ -118,16 +118,6 @@ class State:
                         # move and reverse i to neighbor place
                         yield(i, n, pile, EMPTY_PILE, (height, top, bot))
 
-    def do_action(state, action):
-        i, n, pile, neighbor, new_pile = action
-        state[i] = EMPTY_PILE
-        state[n] = new_pile
-
-    def undo_action(state, action):
-        i, n, pile, neighbor, new_pile = action
-        state[i] = pile
-        state[n] = neighbor
-
     def to_board_action(action):
         return (action[0]//6, action[0]%6, action[1]//6, action[1]%6)
 
@@ -152,9 +142,12 @@ def negamax(state):
             return color * State.score(state)
         val = -inf
         for a in State.successors(state):
-            State.do_action(state, a)
+            i, n, pile, neighbor, new_pile = a
+            state[i] = EMPTY_PILE
+            state[n] = new_pile
             v = -rec(-beta, -alpha, depth+1, -color)
-            State.undo_action(state, a)
+            state[i] = pile
+            state[n] = neighbor
             if v >= beta:
                 return v
             if v > alpha:
@@ -164,9 +157,12 @@ def negamax(state):
     alpha = -inf
     action = None
     for a in State.successors(state):
-        State.do_action(state, a)
+        i, n, pile, neighbor, new_pile = a
+        state[i] = EMPTY_PILE
+        state[n] = new_pile
         v = -rec(-inf, -alpha, 1, -1)
-        State.undo_action(state, a)
+        state[i] = pile
+        state[n] = neighbor
         if v > alpha:
             alpha = v
             action = a
