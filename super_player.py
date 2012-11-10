@@ -144,12 +144,12 @@ class State:
 # Minimax
 inf = float("inf")
 
-def negamax(state, game):
+def negamax(state):
     def rec(alpha, beta, depth, color):
-        if game.cutoff(state, depth):
-            return color * game.evaluate(state)
+        if depth >= 3 or State.is_finished(state):
+            return color * State.score(state)
         val = -inf
-        for a in game.successors(state):
+        for a in State.successors(state):
             State.do_action(state, a)
             v = -rec(-beta, -alpha, depth+1, -color)
             State.undo_action(state, a)
@@ -161,7 +161,7 @@ def negamax(state, game):
 
     alpha = -inf
     action = None
-    for a in game.successors(state):
+    for a in State.successors(state):
         State.do_action(state, a)
         v = -rec(-inf, -alpha, 1, -1)
         State.undo_action(state, a)
@@ -172,13 +172,6 @@ def negamax(state, game):
 
 # We are always the yellow player
 class SuperPlayer(Player):
-    def successors(self, state):
-        return State.successors(state)
-
-    def cutoff(self, state, depth):
-        # TODO: remove depth limitation
-        return depth >= 3 or State.is_finished(state)
-
     def score(state):
         score = 0
         m = board.m
@@ -200,13 +193,10 @@ class SuperPlayer(Player):
 
         # for any tower with no neighbors on normal, bottom color wins (except if any incoming in range 2 ... not likely)
 
-    def evaluate(self, state):
-        return State.score(state)
-
     def play(self, percepts, step, time_left):
         # TODO: check step to see if need to reset
         state = State.from_percepts(percepts)
-        action = negamax(state, self)
+        action = negamax(state)
         return State.to_board_action(action)
 
 if __name__ == "__main__":
