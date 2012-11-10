@@ -102,9 +102,9 @@ class State:
             if height: # if any height
                 arrows = (i % 2 == (i // 6) % 2) # x % 2 == y % 2
                 for n in State.NEIGHBORS[i]:
-                    nh, nbot, ntop = state[n]
-                    if nh:
-                        h = height + nh
+                    nheight, nbot, ntop = state[n]
+                    if nheight:
+                        h = height + nheight
                         if h <= 4:
                             # put i on top of neighbor
                             new_state = state[:]
