@@ -20,6 +20,9 @@ NEUTRAL_COLOR =  0
 # an empty tower is represented as
 EMPTY_PILE = (0, 0, 0)
 
+# a reversible action is represented as
+# (from, to, pile_from, pile_to, new_pile)
+
 # TODO: remove
 # def d(obj):
 #     print(obj)
@@ -97,28 +100,37 @@ class State:
 
     def successors(state):
         for i in range(36): # for i, pile in enumerate(state):
-            height, bot, top = state[i]
+            pile = state[i]
+            height, bot, top = pile
             if height: # if any height
                 arrows = (i % 2 == (i // 6) % 2) # x % 2 == y % 2
                 for n in State.NEIGHBORS[i]:
-                    nheight, nbot, ntop = state[n]
+                    neighbor = state[n]
+                    nheight, nbot, ntop = neighbor
                     if nheight:
                         h = height + nheight
                         if h <= 4:
                             # put i on top of neighbor
-                            new_state = state[:]
-                            new_state[i] = EMPTY_PILE
-                            new_state[n] = (h, nbot, top)
-                            yield((i//6, i%6, n//6, n%6), new_state)
+                            yield(i, n, pile, neighbor, (h, nbot, top))
                     elif not arrows: # arrows around
                         # move and reverse i to neighbor place
-                        new_state = state[:]
-                        new_state[i] = EMPTY_PILE
-                        new_state[n] = (height, top, bot)
-                        yield((i//6, i%6, n//6, n%6), new_state)
+                        yield(i, n, pile, EMPTY_PILE, (height, top, bot))
+
+    def do_action(state, action):
+        i, n, pile, neighbor, new_pile = action
+        state[i] = EMPTY_PILE
+        state[n] = new_pile
+
+    def undo_action(state, action):
+        i, n, pile, neighbor, new_pile = action
+        state[i] = pile
+        state[n] = neighbor
+
+    def to_board_action(action):
+        return (action[0]//6, action[0]%6, action[1]//6, action[1]%6)
 
     def is_finished(state):
-        for action, state in State.successors(state):
+        for _ in State.successors(state):
             return False
         return True
 
@@ -133,12 +145,14 @@ class State:
 inf = float("inf")
 
 def negamax(state, game):
-    def rec(state, alpha, beta, depth, color):
+    def rec(alpha, beta, depth, color):
         if game.cutoff(state, depth):
             return color * game.evaluate(state)
         val = -inf
-        for _, s in game.successors(state):
-            v = -rec(s, -beta, -alpha, depth+1, -color)
+        for a in game.successors(state):
+            State.do_action(state, a)
+            v = -rec(-beta, -alpha, depth+1, -color)
+            State.undo_action(state, a)
             if v >= beta:
                 return v
             if v > alpha:
@@ -147,8 +161,10 @@ def negamax(state, game):
 
     alpha = -inf
     action = None
-    for a, s in game.successors(state):
-        v = -rec(s, -inf, -alpha, 1, -1)
+    for a in game.successors(state):
+        State.do_action(state, a)
+        v = -rec(-inf, -alpha, 1, -1)
+        State.undo_action(state, a)
         if v > alpha:
             alpha = v
             action = a
@@ -191,7 +207,7 @@ class SuperPlayer(Player):
         # TODO: check step to see if need to reset
         state = State.from_percepts(percepts)
         action = negamax(state, self)
-        return action
+        return State.to_board_action(action)
 
 if __name__ == "__main__":
     State.setup()
