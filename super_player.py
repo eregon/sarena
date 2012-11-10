@@ -11,32 +11,15 @@ import minimax
 NO_CHIP_TUPLE = [0,0]
 
 # a cell is represented as
-# ttbb0hhh
-# with:
-# tt: color on top of the pile
-# bb: color on bottom of the pile
-# hhh: height of the pile, represented on 3 bytes
-
-HEIGHT_MASK = 0b00000111
-BOT_MASK    = 0b00110000
-TOP_MASK    = 0b11000000
-
-BOT_OFFSET = 4
-TOP_OFFSET = 6
-DELTA_OFFSET = TOP_OFFSET-BOT_OFFSET
+# (height, bot, top)
 
 # colors
-# careful choice of values
-# second bit means a player (self or opponent)
-# value of player for score is color-2 (neutral will give 0)
-PLAYER_MASK   = 0b01
-SELF_COLOR    = 0b11
-OTHER_COLOR   = 0b01
-NEUTRAL_COLOR = 0b10
-NO_CHIP_COLOR = 0b00
+SELF_COLOR    =  1
+OTHER_COLOR   = -1
+NEUTRAL_COLOR =  0
 
 # an empty tower is represented as
-EMPTY_PILE = 0b00000000
+EMPTY_PILE = (0, 0, 0)
 
 # TODO: remove
 # def d(obj):
@@ -73,7 +56,7 @@ class State:
             raise Exception("Unknown board color: %d" % (color,))
 
     def from_percepts(percepts):
-        state = bytearray(36)
+        state = list(range(36))
         for i in range(6):
             for j in range(6):
                 k = i*6+j
@@ -87,7 +70,7 @@ class State:
                 else:
                     top = State.color_code_from_board_color(tower[height-1][1])
                     bot = State.color_code_from_board_color(tower[0][0])
-                    state[k] = height + (bot << BOT_OFFSET) + (top << TOP_OFFSET)
+                    state[k] = (height, bot, top)
 
         # d(State.__repr__(state))
         return state
@@ -107,34 +90,32 @@ class State:
         for i in range(6):
             row = state[i*6:(i+1)*6]
             s += ' '.join("%d%s%s" % (
-                e & HEIGHT_MASK,
-                State.color_code_to_letter((e & BOT_MASK) >> BOT_OFFSET),
-                State.color_code_to_letter((e & TOP_MASK) >> TOP_OFFSET)
-            ) for e in row) + "\n"
+                h,
+                State.color_code_to_letter(b),
+                State.color_code_to_letter(t)
+            ) for h,b,t in row) + "\n"
         return s
 
     def successors(state):
         for i in range(36): # for i, pile in enumerate(state):
-            pile = state[i]
-            if pile: # if any height
+            height, bot, top = state[i]
+            if height: # if any height
                 arrows = (i % 2 == (i // 6) % 2) # x % 2 == y % 2
-                height = (pile & HEIGHT_MASK)
                 for n in State.NEIGHBORS[i]:
-                    neighbor = state[n]
-                    if neighbor:
-                        h = height + (neighbor & HEIGHT_MASK)
+                    nh, nbot, ntop = state[n]
+                    if nh:
+                        h = height + nh
                         if h <= 4:
                             # put i on top of neighbor
                             new_state = state[:]
                             new_state[i] = EMPTY_PILE
-                            new_state[n] = h + (neighbor & BOT_MASK) + (pile & TOP_MASK)
+                            new_state[n] = (h, nbot, top)
                             yield((i//6, i%6, n//6, n%6), new_state)
                     elif not arrows: # arrows around
                         # move and reverse i to neighbor place
                         new_state = state[:]
                         new_state[i] = EMPTY_PILE
-                        new_state[n] = height + ((pile & TOP_MASK) >> DELTA_OFFSET) + \
-                                                ((pile & BOT_MASK) << DELTA_OFFSET)
+                        new_state[n] = (height, top, bot)
                         yield((i//6, i%6, n//6, n%6), new_state)
 
     def is_finished(state):
@@ -145,10 +126,8 @@ class State:
     def score(state):
         score = 0
         for i in range(36):
-            pile = state[i]
-            if pile:
-                color = ((pile & TOP_MASK) >> TOP_OFFSET) - 2
-                score += (pile & HEIGHT_MASK) * color
+            height, bot, top = state[i]
+            score += height * top
         return score
 
 # We are always the yellow player
