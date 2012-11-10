@@ -132,7 +132,7 @@ class State:
 # Minimax
 inf = float("inf")
 
-def minimax(state, game, prune=True):
+def minimax(state, game):
     def max_value(state, alpha, beta, depth):
         if game.cutoff(state, depth):
             return game.evaluate(state), None
@@ -143,10 +143,9 @@ def minimax(state, game, prune=True):
             if v > val:
                 val = v
                 action = a
-                if prune:
-                    if v >= beta:
-                        return v, a
-                    alpha = max(alpha, v)
+                if v >= beta:
+                    return v, a
+                alpha = max(alpha, v)
         return val, action
 
     def min_value(state, alpha, beta, depth):
@@ -159,10 +158,9 @@ def minimax(state, game, prune=True):
             if v < val:
                 val = v
                 action = a
-                if prune:
-                    if v <= alpha:
-                        return v, a
-                    beta = min(beta, v)
+                if v <= alpha:
+                    return v, a
+                beta = min(beta, v)
         return val, action
 
     _, action = max_value(state, -inf, inf, 0)
