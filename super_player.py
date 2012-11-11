@@ -108,11 +108,10 @@ class State:
         return s
 
     def successors(state):
-        for i in RANGE36: # for i, pile in enumerate(state):
+        for i, arrows in State.ARROWS:
             pile = state[i]
             height, bot, top = pile
             if height: # if any height
-                arrows = (i % 2 == (i // 6) % 2) # x % 2 == y % 2
                 for n in State.NEIGHBORS[i]:
                     neighbor = state[n]
                     nheight, nbot, ntop = neighbor
