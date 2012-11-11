@@ -35,7 +35,7 @@ class TkViewer(Viewer):
     r_cell_x = 3 * w / 7  # radius of a cell along x-axis
     r_cell_y = ratio_yx * r_cell_x  # radius of a cell along y-axis
     r_token_x = 2 * r_cell_x / 3  # radius of a token along x-axis
-    r_token_y = ratio_yx * r_token_x  # radius of a token along y-axis
+    r_token_y = ratio_yx * r_token_x * 0.75  # radius of a token along y-axis
     dist_arrow_x1 = 3 * r_cell_x / 5  # measure to draw the arrows on circles
     dist_arrow_x2 = 11 * r_cell_x / 12  # measure to draw the arrows on circles
     dist_arrow_y = r_cell_y / 2  # measure to draw the arrows on circles
