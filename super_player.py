@@ -85,15 +85,15 @@ class State:
         # d(State.__repr__(state))
         return state
 
-    def color_code_to_letter(color):
-        if color == SELF_COLOR:
+    def color_code_to_letter(height, color):
+        if height == 0:
+            return ' '
+        elif color == SELF_COLOR:
             return 'Y'
         elif color == OTHER_COLOR:
             return 'R'
         elif color == NEUTRAL_COLOR:
             return 'N'
-        else:
-            return ' '
 
     def __repr__(state):
         s = ""
@@ -101,8 +101,8 @@ class State:
             row = state[i*6:(i+1)*6]
             s += ' '.join("%d%s%s" % (
                 h,
-                State.color_code_to_letter(b),
-                State.color_code_to_letter(t)
+                State.color_code_to_letter(h, b),
+                State.color_code_to_letter(h, t)
             ) for h,b,t in row) + "\n"
         return s
 
