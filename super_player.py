@@ -23,6 +23,12 @@ EMPTY_PILE = (0, 0, 0)
 # a reversible action is represented as
 # (from, to, pile_from, pile_to, new_pile)
 
+# score
+SURE_THING = 10
+BACKSTAB = 4
+MAYBE = 2
+LOST = -1
+
 # TODO: remove
 # def d(obj):
 #     print(obj)
@@ -126,11 +132,43 @@ class State:
             return False
         return True
 
+    def board_score(state):
+        score = 0
+        for i in RANGE36:
+            height, _, top = state[i]
+            score += height * top
+        return score
+
     def score(state):
         score = 0
         for i in RANGE36:
+            arrows = (i % 2 == (i // 6) % 2)
             height, bot, top = state[i]
-            score += height * top
+            if height > 0:
+                if arrows: # on arrows
+                    if height == 4:
+                        # for any 4-tower, top color wins
+                        score += SURE_THING * 4 * top
+                    elif all(map(lambda n: state[n] is EMPTY_PILE, State.NEIGHBORS[i])):
+                        # for any tower with no neighbors, top color wins
+                        score += SURE_THING * height * top
+                        # maybe count bot as LOST?
+                    else: # height is 1-3, some neighbors
+                        # bot is useless
+                        score += LOST * bot
+                        # top can go over another pile
+                        score += MAYBE * top # * height ?
+                else: # on normal
+                    if height == 4:
+                        # for any 4-tower, bottom color wins (except if all neighbors around until EOG)
+                        score += SURE_THING * 4 * bot
+                    else: # height is 1-3
+                        # (for any tower with no neighbors in range 2, bottom color wins => too rare)
+                        # bot will be ~ likely returned and win a tower
+                        score += BACKSTAB * bot
+                        # top is useless
+                        score += LOST * top
+
         return score
 
 # Minimax
@@ -170,27 +208,6 @@ def negamax(state):
 
 # We are always the yellow player
 class SuperPlayer(Player):
-    def score(state):
-        score = 0
-        m = board.m
-        # final states:
-        # for any 4-tower on arrows, top color wins
-        # for i,j,s in board.get_towers():
-        #     if (i,j) is arrows and height(tower) == 4:
-        #         score += top color
-
-        # for any 4-tower on normal, bottom color wins (except if all neighbors around until EOG)
-        # for i,j,s in board.get_towers():
-        #     if (i,j) is normal and height(tower) == 4:
-        #         score += bottom color
-
-        # for any tower with no neighbors on arrows, top color wins (except if any incoming around)
-        # for i,j,s in board.get_towers():
-        #     if (i,j) is arrows and no neighbors:
-        #         score += top color / 2
-
-        # for any tower with no neighbors on normal, bottom color wins (except if any incoming in range 2 ... not likely)
-
     def play(self, percepts, step, time_left):
         # TODO: check step to see if need to reset
         state = State.from_percepts(percepts)
