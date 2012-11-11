@@ -38,6 +38,7 @@ RANGE36 = range(36)
 
 class State:
     NEIGHBORS = None
+    ARROWS = tuple(enumerate([i % 2 == (i // 6) % 2 for i in RANGE36])) # x % 2 == y % 2
 
     def neighbors_at(i):
         if i >= 6:     # NORTH
@@ -132,14 +133,24 @@ class State:
             return False
         return True
 
-    def board_score(state):
+    def score(state):
         score = 0
         for i in RANGE36:
             height, _, top = state[i]
             score += height * top
         return score
 
-    def score(state):
+    def fast_score(state):
+        score = 0
+        for i, arrows in State.ARROWS:
+            height, bot, top = state[i]
+            if arrows:
+                score += height * top
+            else:
+                score += height * bot
+        return score
+
+    def acc_score(state):
         score = 0
         for i in RANGE36:
             arrows = (i % 2 == (i // 6) % 2)
