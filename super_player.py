@@ -132,7 +132,7 @@ class State:
             return False
         return True
 
-    def score(state):
+    def board_score(state):
         score = 0
         for i in RANGE36:
             height, _, top = state[i]
@@ -149,10 +149,9 @@ class State:
                 score += height * bot
         return score
 
-    def acc_score(state):
+    def score(state):
         score = 0
-        for i in RANGE36:
-            arrows = (i % 2 == (i // 6) % 2)
+        for i, arrows in State.ARROWS:
             height, bot, top = state[i]
             if height > 0:
                 if arrows: # on arrows
@@ -186,7 +185,7 @@ inf = float("inf")
 
 def negamax(state):
     def rec(alpha, beta, depth, color):
-        if depth >= 3 or State.is_finished(state):
+        if depth >= 2 or State.is_finished(state):
             return color * State.score(state)
         val = -inf
         for a in State.successors(state):
