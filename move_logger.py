@@ -6,7 +6,7 @@ from sarena import *
 class MoveLogger(Player):
     def __init__(self):
         self.log = open('moves.log', 'a')
-    
+
     def play(self, percepts, step, time_left):
         if step == 1: # first step
             self.log.write('New Game\n')
