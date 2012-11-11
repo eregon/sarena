@@ -189,9 +189,9 @@ class State:
 # Minimax
 inf = float("inf")
 
-def negamax(state):
+def negamax(state, max_depth):
     def rec(alpha, beta, depth, color):
-        if depth >= 2 or State.is_finished(state):
+        if depth >= max_depth or State.is_finished(state):
             return color * State.score(state)
         val = -inf
         for a in State.successors(state):
@@ -226,7 +226,7 @@ class SuperPlayer(Player):
     def play(self, percepts, step, time_left):
         # TODO: check step to see if need to reset
         state = State.from_percepts(percepts)
-        action = negamax(state)
+        action = negamax(state, 2)
         return State.to_board_action(action)
 
 if __name__ == "__main__":
