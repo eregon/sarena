@@ -36,12 +36,6 @@ LOST = -1
 
 RANGE36 = range(36)
 
-def my_all(enum, f):
-    for e in enum:
-        if not f(e):
-            return False
-    return True
-
 class State:
     NEIGHBORS = None
     ARROWS = tuple(enumerate([i % 2 == (i // 6) % 2 for i in RANGE36])) # x % 2 == y % 2
@@ -164,15 +158,21 @@ class State:
                     if height == 4:
                         # for any 4-tower, top color wins
                         score += SURE_THING * 4 * top
-                    elif my_all(State.NEIGHBORS[i], lambda n: state[n] is EMPTY_PILE):
-                        # for any tower with no neighbors, top color wins
-                        score += SURE_THING * height * top
-                        # maybe count bot as LOST?
-                    else: # height is 1-3, some neighbors
-                        # bot is useless
-                        score += LOST * bot
-                        # top can go over another pile
-                        score += MAYBE * top # * height ?
+                    else:
+                        no_neighbors = True
+                        for n in State.NEIGHBORS[i]:
+                            if n is not EMPTY_PILE:
+                                no_neighbors = False
+                                break
+                        if no_neighbors:
+                            # for any tower with no neighbors, top color wins
+                            score += SURE_THING * height * top
+                            # maybe count bot as LOST?
+                        else: # height is 1-3, some neighbors
+                            # bot is useless
+                            score += LOST * bot
+                            # top can go over another pile
+                            score += MAYBE * top # * height ?
                 else: # on normal
                     if height == 4:
                         # for any 4-tower, bottom color wins (except if all neighbors around until EOG)
