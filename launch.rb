@@ -5,6 +5,12 @@
 n = (ARGV.shift || 10).to_i
 BOARD = ARGV.delete('-r') ? '' : ' --board b1.dmp'
 
+time_limit = nil
+if i = ARGV.index('-t')
+  ARGV.delete_at(i)
+  time_limit = Integer(ARGV.delete_at(i))
+end
+
 $stdout.sync = true
 
 mean = -> sample {
@@ -47,7 +53,7 @@ begin
   puts
   puts Time.now
   puts "Game i: score steps time"
-  IO.popen("python3 game.py -v#{BOARD} -n #{n} --headless http://localhost:8000 http://localhost:7000 2>&1") do |io|
+  IO.popen("python3 game.py -v#{BOARD} -n #{n}#{" -t #{time_limit}" if time_limit} --headless http://localhost:8000 http://localhost:7000 2>&1") do |io|
     i = 0
     while line = io.gets
       lines << line
@@ -63,6 +69,8 @@ begin
         steps << step
         print "#{'%2d' % step} "
         puts "#{'%.3f' % time}s"
+      when /-- DEBUG: Time credit expired/
+        print 'EXPIRED '
       when /-- INFO: Score: (-?\d+)/
         score = Integer($1)
         scores << score
@@ -73,7 +81,7 @@ begin
           time += Float($2)
         end
       end
-      puts line if $VERBOSE
+      $stderr.puts line if $VERBOSE
     end
   end
 
