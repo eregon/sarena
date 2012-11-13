@@ -189,8 +189,7 @@ class State:
             else: # height is 1-3
                 # (for any tower with no neighbors in range 2, bottom color wins => too rare)
                 # bot will be ~ likely returned and win a tower
-                # top is useless
-                return BACKSTAB * bot + LOST * top
+                return BACKSTAB * bot
 
     def score(state):
         score = 0
