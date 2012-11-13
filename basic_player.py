@@ -22,7 +22,7 @@ class AlphaBetaPlayer(Player, minimax.Game):
 
     def cutoff(self, board, depth):
         # TODO: remove depth limitation
-        return depth >= 3 or board.is_finished()
+        return depth >= 2 or board.is_finished()
 
     def evaluate(self, board):
         score = board.get_score()
