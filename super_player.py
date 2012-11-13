@@ -119,16 +119,24 @@ class State:
                         h = height + nheight
                         if h <= 4:
                             # put i on top of neighbor
-                            yield(i, n, (h, nbot, top))
+                            new_pile = (h, nbot, top)
+                            s = state[:]
+                            s[i] = EMPTY_PILE
+                            s[n] = new_pile
+                            yield((i, n, new_pile), s)
                     elif not arrows: # arrows around
                         # move and reverse i to neighbor place
-                        yield(i, n, (height, top, bot))
+                        new_pile = (height, top, bot)
+                        s = state[:]
+                        s[i] = EMPTY_PILE
+                        s[n] = new_pile
+                        yield((i, n, new_pile), s)
 
     def to_board_action(action):
         return (action[0]//6, action[0]%6, action[1]//6, action[1]%6)
 
     def is_finished(state):
-        for _ in State.successors(state):
+        for _, _ in State.successors(state):
             return False
         return True
 
@@ -194,11 +202,7 @@ def negamax(state, max_depth):
         if depth >= max_depth or State.is_finished(state):
             return color * State.score(state)
         val = -inf
-        for a in State.successors(state):
-            i, n, new_pile = a
-            s = state[:]
-            s[i] = EMPTY_PILE
-            s[n] = new_pile
+        for a, s in State.successors(state):
             v = -rec(s, -beta, -alpha, depth+1, -color)
             if v >= beta:
                 return v
@@ -208,11 +212,7 @@ def negamax(state, max_depth):
 
     alpha = -inf
     action = None
-    for a in State.successors(state):
-        i, n, new_pile = a
-        s = state[:]
-        s[i] = EMPTY_PILE
-        s[n] = new_pile
+    for a, s in State.successors(state):
         v = -rec(s, -inf, -alpha, 1, -1)
         if v > alpha:
             alpha = v
