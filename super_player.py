@@ -35,6 +35,8 @@ LOST = -1
 #     return obj
 
 RANGE36 = range(36)
+LIST37 = [0 for _ in range(37)]
+SCORE = 36 # index in state
 
 class State:
     NEIGHBORS = None
@@ -67,7 +69,7 @@ class State:
             raise Exception("Unknown board color: %d" % (color,))
 
     def from_percepts(percepts):
-        state = list(RANGE36)
+        state = LIST37[:]
         for i in range(6):
             for j in range(6):
                 k = i*6+j
@@ -84,6 +86,7 @@ class State:
                     state[k] = (height, bot, top)
 
         # d(State.__repr__(state))
+        state[SCORE] = State.score(state)
         return state
 
     def color_code_to_letter(height, color):
@@ -122,12 +125,14 @@ class State:
                             s = state[:]
                             s[i] = EMPTY_PILE
                             s[n] = (h, nbot, top)
+                            s[SCORE] = State.incremental_score(state, i, n, s, arrows)
                             yield((i, n), s)
                     elif not arrows: # arrows around
                         # move and reverse i to neighbor place
                         s = state[:]
                         s[i] = EMPTY_PILE
                         s[n] = (height, top, bot)
+                        s[SCORE] = State.incremental_score(state, i, n, s, arrows)
                         yield((i, n), s)
 
     def to_board_action(action):
@@ -155,40 +160,65 @@ class State:
                 score += height * bot
         return score
 
+    def score_at(state, i, arrows):
+        height, bot, top = state[i]
+        if height == 0:
+            return 0
+        if arrows: # on arrows
+            if height == 4:
+                # for any 4-tower, top color wins
+                return SURE_THING * 4 * top
+            else:
+                no_neighbors = True
+                for n in State.NEIGHBORS[i]:
+                    if n is not EMPTY_PILE:
+                        no_neighbors = False
+                        break
+                if no_neighbors:
+                    # for any tower with no neighbors, top color wins
+                    return SURE_THING * height * top
+                    # maybe count bot as LOST?
+                else: # height is 1-3, some neighbors
+                    # bot is useless
+                    # top can go over another pile
+                    return LOST * bot + MAYBE * top # * height ?
+        else: # on normal
+            if height == 4:
+                # for any 4-tower, bottom color wins (except if all neighbors around until EOG)
+                return SURE_THING * 4 * bot
+            else: # height is 1-3
+                # (for any tower with no neighbors in range 2, bottom color wins => too rare)
+                # bot will be ~ likely returned and win a tower
+                # top is useless
+                return BACKSTAB * bot + LOST * top
+
     def score(state):
         score = 0
         for i, arrows in State.ARROWS:
-            height, bot, top = state[i]
-            if height > 0:
-                if arrows: # on arrows
-                    if height == 4:
-                        # for any 4-tower, top color wins
-                        score += SURE_THING * 4 * top
-                    else:
-                        no_neighbors = True
-                        for n in State.NEIGHBORS[i]:
-                            if n is not EMPTY_PILE:
-                                no_neighbors = False
-                                break
-                        if no_neighbors:
-                            # for any tower with no neighbors, top color wins
-                            score += SURE_THING * height * top
-                            # maybe count bot as LOST?
-                        else: # height is 1-3, some neighbors
-                            # bot is useless
-                            score += LOST * bot
-                            # top can go over another pile
-                            score += MAYBE * top # * height ?
-                else: # on normal
-                    if height == 4:
-                        # for any 4-tower, bottom color wins (except if all neighbors around until EOG)
-                        score += SURE_THING * 4 * bot
-                    else: # height is 1-3
-                        # (for any tower with no neighbors in range 2, bottom color wins => too rare)
-                        # bot will be ~ likely returned and win a tower
-                        score += BACKSTAB * bot
-                        # top is useless
-                        score += LOST * top
+            score += State.score_at(state, i, arrows)
+        return score
+
+    def incremental_score(old_state, i, n, new_state, arrows):
+        """
+        arrows = i is on arrows
+        EMPTY_PILE at i in new_state
+        height at n > 0
+        Need to update i, n, and (i or n, which one is not on arrows)'s neighbors
+        """
+        narrows = not(arrows)
+        score = old_state[SCORE]
+        # remove i score (new score is 0)
+        score -= State.score_at(old_state, i, arrows)
+
+        if narrows: # neighbors of i have arrows and might have no more other piles around
+            # n will be evaluated as one of these
+            for neighbor in State.NEIGHBORS[i]:
+                score -= State.score_at(old_state, neighbor, narrows)
+                score += State.score_at(new_state, neighbor, narrows)
+        else:
+            # evaluate n
+            score -= State.score_at(old_state, n, narrows)
+            score += State.score_at(new_state, n, narrows)
 
         return score
 
@@ -198,7 +228,7 @@ inf = float("inf")
 def negamax(state, max_depth):
     def rec(state, alpha, beta, depth, color):
         if depth >= max_depth or State.is_finished(state):
-            return color * State.score(state)
+            return color * state[SCORE]
         val = -inf
         for a, s in State.successors(state):
             v = -rec(s, -beta, -alpha, depth+1, -color)
