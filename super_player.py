@@ -224,7 +224,7 @@ class SuperPlayer(Player):
     def play(self, percepts, step, time_left):
         # TODO: check step to see if need to reset
         state = State.from_percepts(percepts)
-        action = negamax(state, 2)
+        action = negamax(state, 3)
         return State.to_board_action(action)
 
 if __name__ == "__main__":
