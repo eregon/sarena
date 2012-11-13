@@ -119,18 +119,16 @@ class State:
                         h = height + nheight
                         if h <= 4:
                             # put i on top of neighbor
-                            new_pile = (h, nbot, top)
                             s = state[:]
                             s[i] = EMPTY_PILE
-                            s[n] = new_pile
-                            yield((i, n, new_pile), s)
+                            s[n] = (h, nbot, top)
+                            yield((i, n), s)
                     elif not arrows: # arrows around
                         # move and reverse i to neighbor place
-                        new_pile = (height, top, bot)
                         s = state[:]
                         s[i] = EMPTY_PILE
-                        s[n] = new_pile
-                        yield((i, n, new_pile), s)
+                        s[n] = (height, top, bot)
+                        yield((i, n), s)
 
     def to_board_action(action):
         return (action[0]//6, action[0]%6, action[1]//6, action[1]%6)
