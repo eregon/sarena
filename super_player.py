@@ -119,10 +119,10 @@ class State:
                         h = height + nheight
                         if h <= 4:
                             # put i on top of neighbor
-                            yield(i, n, pile, neighbor, (h, nbot, top))
+                            yield(i, n, (h, nbot, top))
                     elif not arrows: # arrows around
                         # move and reverse i to neighbor place
-                        yield(i, n, pile, EMPTY_PILE, (height, top, bot))
+                        yield(i, n, (height, top, bot))
 
     def to_board_action(action):
         return (action[0]//6, action[0]%6, action[1]//6, action[1]%6)
@@ -190,17 +190,16 @@ class State:
 inf = float("inf")
 
 def negamax(state, max_depth):
-    def rec(alpha, beta, depth, color):
+    def rec(state, alpha, beta, depth, color):
         if depth >= max_depth or State.is_finished(state):
             return color * State.score(state)
         val = -inf
         for a in State.successors(state):
-            i, n, pile, neighbor, new_pile = a
-            state[i] = EMPTY_PILE
-            state[n] = new_pile
-            v = -rec(-beta, -alpha, depth+1, -color)
-            state[i] = pile
-            state[n] = neighbor
+            i, n, new_pile = a
+            s = state[:]
+            s[i] = EMPTY_PILE
+            s[n] = new_pile
+            v = -rec(s, -beta, -alpha, depth+1, -color)
             if v >= beta:
                 return v
             if v > alpha:
@@ -210,12 +209,11 @@ def negamax(state, max_depth):
     alpha = -inf
     action = None
     for a in State.successors(state):
-        i, n, pile, neighbor, new_pile = a
-        state[i] = EMPTY_PILE
-        state[n] = new_pile
-        v = -rec(-inf, -alpha, 1, -1)
-        state[i] = pile
-        state[n] = neighbor
+        i, n, new_pile = a
+        s = state[:]
+        s[i] = EMPTY_PILE
+        s[n] = new_pile
+        v = -rec(s, -inf, -alpha, 1, -1)
         if v > alpha:
             alpha = v
             action = a
@@ -226,7 +224,7 @@ class SuperPlayer(Player):
     def play(self, percepts, step, time_left):
         # TODO: check step to see if need to reset
         state = State.from_percepts(percepts)
-        action = negamax(state, 2)
+        action = negamax(state, 3)
         return State.to_board_action(action)
 
 if __name__ == "__main__":
