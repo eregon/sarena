@@ -110,7 +110,7 @@ class State:
             ) for h,b,t in row) + "\n"
         return s
 
-    def successors(state):
+    def gen_successors(state):
         for i, arrows in State.ARROWS:
             pile = state[i]
             height, bot, top = pile
@@ -135,11 +135,19 @@ class State:
                         s[SCORE] = State.incremental_score(state, i, n, s, arrows)
                         yield((i, n), s)
 
+    def successors(state, player, depth_left):
+        if depth_left == 1:
+            return State.gen_successors(state)
+        else:
+            successors = list(State.gen_successors(state))
+            successors.sort(key=lambda a_s: a_s[1][SCORE], reverse=(player==1))
+            return successors
+
     def to_board_action(action):
         return (action[0]//6, action[0]%6, action[1]//6, action[1]%6)
 
     def is_finished(state):
-        for _, _ in State.successors(state):
+        for _, _ in State.gen_successors(state):
             return False
         return True
 
@@ -226,10 +234,10 @@ inf = float("inf")
 
 def negamax(state, max_depth):
     def rec(state, alpha, beta, depth, color):
-        if depth >= max_depth or State.is_finished(state):
+        if depth == max_depth or State.is_finished(state):
             return color * state[SCORE]
         val = -inf
-        for a, s in State.successors(state):
+        for a, s in State.successors(state, color, max_depth-depth):
             v = -rec(s, -beta, -alpha, depth+1, -color)
             if v >= beta:
                 return v
@@ -239,7 +247,7 @@ def negamax(state, max_depth):
 
     alpha = -inf
     action = None
-    for a, s in State.successors(state):
+    for a, s in State.successors(state, 1, 0):
         v = -rec(s, -inf, -alpha, 1, -1)
         if v > alpha:
             alpha = v
@@ -251,7 +259,7 @@ class SuperPlayer(Player):
     def play(self, percepts, step, time_left):
         # TODO: check step to see if need to reset
         state = State.from_percepts(percepts)
-        action = negamax(state, 3)
+        action = negamax(state, 4)
         return State.to_board_action(action)
 
 if __name__ == "__main__":
