@@ -335,10 +335,14 @@ if __name__ == "__main__":
                 exit(1)
             board = trace.get_initial_board()
         elif options.board is not None:
+            if options.board == "statics":
+                board_file = "boards/b%d.dmp" % (i+1,)
+            else:
+                board_file = options.board
             # load board
-            logging.debug("Loading board from '%s'", options.board)
+            logging.debug("Loading board from '%s'", board_file)
             try:
-                percepts = load_percepts(options.board)
+                percepts = load_percepts(board_file)
             except (IOError, pickle.UnpicklingError) as e:
                 logging.warning("Unable to load board. Reason: %s", e)
                 exit(1)

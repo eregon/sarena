@@ -3,7 +3,7 @@
 # python3 game.py -v --headless http://localhost:8000 http://localhost:7000
 
 n = (ARGV.shift || 10).to_i
-BOARD = ARGV.delete('-r') ? '' : ' --board b1.dmp'
+BOARD = ARGV.delete('-r') ? '' : ARGV.delete('statics') ? ' --board statics' : ' --board b1.dmp'
 
 time_limit = nil
 if i = ARGV.index('-t')
