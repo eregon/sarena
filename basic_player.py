@@ -27,7 +27,7 @@ class AlphaBetaPlayer(Player, minimax.Game):
     def evaluate(self, board):
         score = board.get_score()
 
-        # return score * self.player
+        # return score
         if score > 0:
             return 1
         elif score < 0:
