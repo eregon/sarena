@@ -27,8 +27,8 @@ class TestEvaluation(unittest.TestCase):
             return 1
         elif code == "R":
             return -1
-        else:
-            return 0
+        elif code == "N":
+            return 0 if SUPER_MODEL else 2
 
     def parse(self, state):
         if SUPER_MODEL:
@@ -121,6 +121,16 @@ class TestEvaluation(unittest.TestCase):
         0   0   0   0   0   0
         """
         self.assertEqual(State.score(self.parse(state)), 3*SURE_THING)
+
+        state = """
+        3YN 1NN 0   0   0   0
+        0   0   0   0   0   0
+        0   0   0   0   0   0
+        0   0   0   0   0   0
+        0   0   0   0   0   0
+        0   0   0   0   0   0
+        """
+        self.assertEqual(State.score(self.parse(state)), LOST)
 
         state = """
         3YN 0   4NR 0   2NN 0
