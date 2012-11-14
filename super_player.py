@@ -265,12 +265,16 @@ MAX_STEPS = 35
 # We are always the yellow player
 class SuperPlayer(Player):
     saw_end_of_game = False
+    steps_left = None
 
     def play(self, percepts, step, time_left):
         state = State.from_percepts(percepts)
 
         if time_left: # if time limited
-            steps_left = max(MAX_STEPS-step, 1)
+            if SuperPlayer.saw_end_of_game:
+                steps_left = (SuperPlayer.steps_left - 2) + 1
+            else:
+                steps_left = max(MAX_STEPS-step, 1)
             time_for_this_step = time_left / steps_left
             stop_time = time() + time_for_this_step
 
@@ -283,10 +287,10 @@ class SuperPlayer(Player):
                     depth += 1
                     action = negamax(state, depth, stop_time)
             except MyTimeoutError:
-                print(depth-1) # what we actually did
+                pass
             else:
-                print("End")
-                print(depth)
+                SuperPlayer.steps_left = depth
+
         else:
             stop_time = None
             depth = 4
