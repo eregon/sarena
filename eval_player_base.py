@@ -3,7 +3,7 @@
 from sarena import *
 import minimax
 
-class AlphaBetaPlayer(Player, minimax.Game):
+class EvalPlayerBase(Player, minimax.Game):
     def successors(self, board):
         for action in board.get_actions():
             new_board = board.clone()
@@ -11,7 +11,7 @@ class AlphaBetaPlayer(Player, minimax.Game):
             yield action, new_board
 
     def cutoff(self, board, depth):
-        return True
+        return depth == 1
 
     def evaluate(self, board):
         return board.get_score()
@@ -22,5 +22,5 @@ class AlphaBetaPlayer(Player, minimax.Game):
         return minimax.search(board, self)
 
 if __name__ == "__main__":
-    player = AlphaBetaPlayer()
+    player = EvalPlayerBase()
     player_main(player)
