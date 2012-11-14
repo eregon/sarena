@@ -150,7 +150,7 @@ class TestEvaluation(unittest.TestCase):
         0   0   0   0   0   0
         0   0   0   0   0   0
         """
-        self.assertEqual(State.score(self.parse(state)), BACKSTAB)
+        self.assertEqual(State.score(self.parse(state)), 3*BACKSTAB)
 
         state = """
         3YN 0   4NR 0   2NN 0

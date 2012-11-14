@@ -5,7 +5,7 @@ import minimax
 
 # score
 SURE_THING = 10
-BACKSTAB = 4
+BACKSTAB = 5
 MAYBE = 2
 
 class EvalPlayerOurs(Player, minimax.Game):
@@ -60,7 +60,7 @@ class EvalPlayerOurs(Player, minimax.Game):
             else: # height is 1-3
                 # (for any tower with no neighbors in range 2, bottom color wins => too rare)
                 # bot will be ~ likely returned and win a tower
-                return BACKSTAB * bot
+                return BACKSTAB * bot * height
 
     def evaluate(self, board):
         score = 0

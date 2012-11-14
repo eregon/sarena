@@ -25,7 +25,7 @@ EMPTY_PILE = (0, 0, 0)
 
 # score
 SURE_THING = 10
-BACKSTAB = 4
+BACKSTAB = 5
 MAYBE = 2
 
 # TODO: remove
@@ -195,7 +195,7 @@ class State:
             else: # height is 1-3
                 # (for any tower with no neighbors in range 2, bottom color wins => too rare)
                 # bot will be ~ likely returned and win a tower
-                return BACKSTAB * bot
+                return BACKSTAB * bot * height
 
     def score(state):
         score = 0
