@@ -7,7 +7,6 @@ import minimax
 SURE_THING = 10
 BACKSTAB = 4
 MAYBE = 2
-LOST = -1
 
 class EvalPlayerOurs(Player, minimax.Game):
     def successors(self, board):
@@ -50,11 +49,10 @@ class EvalPlayerOurs(Player, minimax.Game):
                 if no_neighbors:
                     # for any tower with no neighbors, top color wins
                     return SURE_THING * height * top
-                    # maybe count bot as LOST?
                 else: # height is 1-3, some neighbors
                     # bot is useless
                     # top can go over another pile
-                    return LOST * bot + MAYBE * top # * height ?
+                    return MAYBE * top # * height ?
         else: # on normal
             if height == 4:
                 # for any 4-tower, bottom color wins (except if all neighbors around until EOG)

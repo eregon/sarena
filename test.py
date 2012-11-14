@@ -130,7 +130,7 @@ class TestEvaluation(unittest.TestCase):
         0   0   0   0   0   0
         0   0   0   0   0   0
         """
-        self.assertEqual(State.score(self.parse(state)), LOST)
+        self.assertEqual(State.score(self.parse(state)), 0)
 
         state = """
         3YR 1NN 0   0   0   0
@@ -140,7 +140,7 @@ class TestEvaluation(unittest.TestCase):
         0   0   0   0   0   0
         0   0   0   0   0   0
         """
-        self.assertEqual(State.score(self.parse(state)), LOST-MAYBE)
+        self.assertEqual(State.score(self.parse(state)), 0-MAYBE)
 
         state = """
         0   3YR 0   0   0   0
