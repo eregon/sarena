@@ -133,6 +133,26 @@ class TestEvaluation(unittest.TestCase):
         self.assertEqual(State.score(self.parse(state)), LOST)
 
         state = """
+        3YR 1NN 0   0   0   0
+        0   0   0   0   0   0
+        0   0   0   0   0   0
+        0   0   0   0   0   0
+        0   0   0   0   0   0
+        0   0   0   0   0   0
+        """
+        self.assertEqual(State.score(self.parse(state)), LOST-MAYBE)
+
+        state = """
+        0   3YR 0   0   0   0
+        0   0   0   0   0   0
+        0   0   0   0   0   0
+        0   0   0   0   0   0
+        0   0   0   0   0   0
+        0   0   0   0   0   0
+        """
+        self.assertEqual(State.score(self.parse(state)), BACKSTAB)
+
+        state = """
         3YN 0   4NR 0   2NN 0
         0   2YN 0   0   0   4YN
         0   0   0   0   0   0
