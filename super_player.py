@@ -3,9 +3,8 @@
 
 '''Benoit Daloze & Xavier de Ryckel'''
 
-import random
-
 from sarena import *
+from time import time
 
 NO_CHIP_TUPLE = [0,0]
 
@@ -230,9 +229,17 @@ class State:
 # Minimax
 inf = float("inf")
 
-def negamax(state, max_depth):
+class MyTimeoutError(Exception):
+    pass
+
+def negamax(state, max_depth, stop_time):
     def rec(state, alpha, beta, depth, color):
-        if depth == max_depth or State.is_finished(state):
+        if stop_time and time() >= stop_time:
+            raise MyTimeoutError()
+        if depth == max_depth:
+            return color * state[SCORE]
+        if State.is_finished(state):
+            SuperPlayer.saw_end_of_game = True
             return color * state[SCORE]
         val = -inf
         for a, s in State.successors(state, color, max_depth-depth):
@@ -252,12 +259,39 @@ def negamax(state, max_depth):
             action = a
     return action
 
+
+MAX_STEPS = 35
+
 # We are always the yellow player
 class SuperPlayer(Player):
+    saw_end_of_game = False
+
     def play(self, percepts, step, time_left):
-        # TODO: check step to see if need to reset
         state = State.from_percepts(percepts)
-        action = negamax(state, 4)
+
+        if time_left: # if time limited
+            steps_left = max(MAX_STEPS-step, 1)
+            time_for_this_step = time_left / steps_left
+            stop_time = time() + time_for_this_step
+
+            # iterative deepening to find appropriate depth
+            depth = 2
+            SuperPlayer.saw_end_of_game = False
+            action = negamax(state, depth, stop_time)
+            try:
+                while not SuperPlayer.saw_end_of_game:
+                    depth += 1
+                    action = negamax(state, depth, stop_time)
+            except MyTimeoutError:
+                print(depth-1) # what we actually did
+            else:
+                print("End")
+                print(depth)
+        else:
+            stop_time = None
+            depth = 4
+            action = negamax(state, depth, stop_time)
+
         return State.to_board_action(action)
 
 if __name__ == "__main__":
