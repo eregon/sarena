@@ -41,8 +41,8 @@ begin
     player = 'super_player.py'
     opponent = 'fast_player.py' # 'random_player.py'
   end
-  player1 = spawn("python3 #{player}   -p 8000", out: File::NULL, err: File::NULL)
-  player2 = spawn("python3 #{opponent} -p 7000", out: File::NULL, err: File::NULL)
+  player1 = spawn("python3 #{player}   -p 8123", out: File::NULL, err: File::NULL)
+  player2 = spawn("python3 #{opponent} -p 7123", out: File::NULL, err: File::NULL)
   sleep 0.1 # let them start
 
   scores = []
@@ -53,7 +53,7 @@ begin
   puts
   puts Time.now
   puts "Game i: score steps time"
-  IO.popen("python3 game.py -v#{BOARD} -n #{n}#{" -t #{time_limit}" if time_limit} --headless http://localhost:8000 http://localhost:7000 2>&1") do |io|
+  IO.popen("python3 game.py -v#{BOARD} -n #{n}#{" -t #{time_limit}" if time_limit} --headless http://localhost:8123 http://localhost:7123 2>&1") do |io|
     i = 0
     while line = io.gets
       lines << line
