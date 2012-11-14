@@ -179,7 +179,7 @@ class State:
             else:
                 no_neighbors = True
                 for n in State.NEIGHBORS[i]:
-                    if n is not EMPTY_PILE:
+                    if state[n] is not EMPTY_PILE:
                         no_neighbors = False
                         break
                 if no_neighbors:
