@@ -52,7 +52,7 @@ class EvalPlayerOurs(Player, minimax.Game):
                 else: # height is 1-3, some neighbors
                     # bot is useless
                     # top can go over another pile
-                    return MAYBE * top # * height ?
+                    return MAYBE * top * height
         else: # on normal
             if height == 4:
                 # for any 4-tower, bottom color wins (except if all neighbors around until EOG)

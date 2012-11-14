@@ -140,7 +140,7 @@ class TestEvaluation(unittest.TestCase):
         0   0   0   0   0   0
         0   0   0   0   0   0
         """
-        self.assertEqual(State.score(self.parse(state)), 0-MAYBE)
+        self.assertEqual(State.score(self.parse(state)), 0-3*MAYBE)
 
         state = """
         0   3YR 0   0   0   0
