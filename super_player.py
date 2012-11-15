@@ -285,10 +285,10 @@ class SuperPlayer(Player):
             stop_time = time() + time_for_this_step
 
             # iterative deepening to find appropriate depth
-            depth = 2
             SuperPlayer.saw_end_of_game = False
-            action = negamax(state, depth, stop_time)
+            depth = 1
             try:
+                action = negamax(state, depth, stop_time)
                 while not SuperPlayer.saw_end_of_game:
                     depth += 1
                     action = negamax(state, depth, stop_time)
