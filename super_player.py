@@ -267,8 +267,14 @@ class SuperPlayer(Player):
     saw_end_of_game = False
     steps_left = None
 
+    def reset(self):
+        SuperPlayer.saw_end_of_game = False
+        SuperPlayer.steps_left = None
+
     def play(self, percepts, step, time_left):
         state = State.from_percepts(percepts)
+        if step <= 2:
+            self.reset()
 
         if time_left: # if time limited
             if SuperPlayer.saw_end_of_game and SuperPlayer.steps_left:
