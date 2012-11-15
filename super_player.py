@@ -281,7 +281,8 @@ class SuperPlayer(Player):
             if SuperPlayer.saw_end_of_game and SuperPlayer.steps_left:
                 steps_left = (SuperPlayer.steps_left - 2) + 1
             else:
-                steps_left = max(MAX_STEPS-step, 1)
+                steps_left = MAX_STEPS-step
+            steps_left = max(steps_left, 1)
             time_for_this_step = time_left / steps_left
             stop_time = time() + time_for_this_step
 
