@@ -271,7 +271,7 @@ class SuperPlayer(Player):
         state = State.from_percepts(percepts)
 
         if time_left: # if time limited
-            if SuperPlayer.saw_end_of_game:
+            if SuperPlayer.saw_end_of_game and SuperPlayer.steps_left:
                 steps_left = (SuperPlayer.steps_left - 2) + 1
             else:
                 steps_left = max(MAX_STEPS-step, 1)
