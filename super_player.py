@@ -241,7 +241,7 @@ def negamax(state, max_depth, stop_time):
         if State.is_finished(state):
             SuperPlayer.saw_end_of_game = True
             return color * state[SCORE]
-        val = -inf
+
         for a, s in State.successors(state, color, max_depth-depth):
             v = -rec(s, -beta, -alpha, depth+1, -color)
             if v >= beta:
