@@ -240,6 +240,7 @@ def negamax(state, max_depth, stop_time):
             return color * state[SCORE]
         if State.is_finished(state):
             SuperPlayer.saw_end_of_game = True
+            SuperPlayer.steps_left = depth
             return color * state[SCORE]
 
         for a, s in State.successors(state, color, max_depth-depth):
@@ -294,8 +295,6 @@ class SuperPlayer(Player):
                     action = negamax(state, depth, stop_time)
             except MyTimeoutError:
                 pass
-            else:
-                SuperPlayer.steps_left = depth
 
         else:
             stop_time = None
